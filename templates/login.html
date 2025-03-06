@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        
+.parent {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 8px;
+    
+}
+    
+.div3 {
+    grid-row: span 3 / span 3;
+    grid-column-start: 2;
+    grid-row-start: 2;
+}
+
+.div4 {
+    grid-row: span 3 / span 3;
+    grid-column-start: 4;
+    grid-row-start: 2;
+}
+        
+    </style>
+</head>
+
+    <body>
+        <div style="align-content: center; background-color: grey;color: aliceblue ;"><center>
+            <h1 style="font-size: 300%;">
+                Who are You ???
+
+            </h1>
+            <p >
+                Login to Campus2Career
+            </p>
+            </center>
+        </div>
+<div class="parent" >
+
+    <div class="div3"  style="background-color: #2a3da5; padding: 50%;">3</div>
+<div class="div4" style="background-color: #a52a2a; padding: 50%;">4
+
+</div>
+</div>
+
+    </body>
+</html>
