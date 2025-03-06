@@ -2,312 +2,371 @@
 
 {% block title %}Alumni Dashboard - Campus2Career{% endblock %}
 
+{% block extra_css %}
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row">
-        <!-- Profile Section -->
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-body text-center">
+<div class="container py-4">
+    <!-- Welcome Banner -->
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-body bg-primary text-white rounded">
+            <div class="row align-items-center">
+                <div class="col-auto">
                     <img src="{{ url_for('static', filename='images/' + current_user.profile_image) }}" 
-                         alt="Profile" class="profile-img mb-3">
-                    <h3>{{ current_user.username }}</h3>
-                    <p class="text-muted">Alumni</p>
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">
-                        <i class="fas fa-edit"></i> Edit Profile
-                    </button>
+                         alt="Profile" class="rounded-circle border border-3 border-white"
+                         style="width: 80px; height: 80px; object-fit: cover;">
                 </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Contribution Stats</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row text-center">
-                        <div class="col-xs-6">
-                            <h4>{{ answers|length }}</h4>
-                            <p>Answers Given</p>
-                        </div>
-                        <div class="col-xs-6">
-                            <h4>{{ helpful_count }}</h4>
-                            <p>Helpful Votes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Areas of Expertise -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Areas of Expertise</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="expertise-tags">
-                        {% for expertise in current_user.expertise %}
-                            <span class="label label-primary">{{ expertise }}</span>
-                        {% endfor %}
-                        <button class="btn btn-link btn-sm" data-toggle="modal" data-target="#editExpertiseModal">
-                            <i class="fas fa-plus"></i> Add More
-                        </button>
-                    </div>
+                <div class="col">
+                    <h2 class="mb-1">Welcome back, {{ current_user.username }}! 🎓</h2>
+                    <p class="mb-0 lead">Ready to mentor and guide the next generation?</p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content Section -->
-        <div class="col-md-8">
-            <!-- My Answers -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">My Answers</h3>
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-sm-6 mb-3">
+                    <div class="card shadow h-100 hover-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success p-3 me-3">
+                                    <i class="fas fa-briefcase fa-2x text-white"></i>
+                                </div>
+                                <h4 class="mb-0">Post a Job</h4>
+                            </div>
+                            <p class="text-muted">Share opportunities with students!</p>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#postJobModal">
+                                <i class="fas fa-plus me-2"></i>New Job Post
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-body">
+                <div class="col-sm-6 mb-3">
+                    <div class="card shadow h-100 hover-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-primary p-3 me-3">
+                                    <i class="fas fa-calendar-alt fa-2x text-white"></i>
+                                </div>
+                                <h4 class="mb-0">Host Event</h4>
+                            </div>
+                            <p class="text-muted">Share your experience!</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                                <i class="fas fa-plus me-2"></i>Schedule Event
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mentorship Requests -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-users me-2"></i>Mentorship Requests
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">John Doe</h5>
+                                    <p class="mb-1 text-muted">Looking for guidance in web development career path</p>
+                                    <small>
+                                        <i class="fas fa-graduation-cap me-1"></i>Computer Science
+                                    </small>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-success btn-sm">
+                                        <i class="fas fa-check me-1"></i>Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-times me-1"></i>Decline
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Add more mentorship requests here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Answers -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>Your Answers
+                    </h4>
+                </div>
+                <div class="card-body">
                     {% if answers %}
                         {% for answer in answers %}
-                            <div class="answer-card">
-                                <div class="question-title">
-                                    <a href="{{ url_for('question_detail', id=answer.question.id) }}">
-                                        {{ answer.question.title }}
-                                    </a>
-                                </div>
-                                <div class="answer-content">
-                                    {{ answer.content[:200] }}{% if answer.content|length > 200 %}...{% endif %}
-                                </div>
-                                <div class="answer-meta">
-                                    <span class="text-muted">
-                                        Answered on {{ answer.created_at.strftime('%B %d, %Y') }}
-                                    </span>
-                                    <div class="answer-actions">
-                                        <button class="btn btn-sm btn-primary" onclick="editAnswer({{ answer.id }})">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteAnswer({{ answer.id }})">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
+                            <div class="card mb-3 hover-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{{ url_for('question_detail', id=answer.question.id) }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ answer.question.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted">{{ answer.content[:150] }}...</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            {{ answer.created_at.strftime('%B %d, %Y') }}
+                                        </small>
+                                        <a href="{{ url_for('question_detail', id=answer.question.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            View Discussion
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
                     {% else %}
-                        <p class="text-center">You haven't answered any questions yet.</p>
-                        <div class="text-center">
-                            <a href="{{ url_for('questions') }}" class="btn btn-primary">
-                                Browse Questions
+                        <div class="text-center py-4">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <p class="lead">You haven't answered any questions yet!</p>
+                            <a href="{{ url_for('questions') }}" class="btn btn-primary mt-2">
+                                <i class="fas fa-search me-2"></i>Browse Questions
                             </a>
                         </div>
                     {% endif %}
                 </div>
             </div>
+        </div>
 
-            <!-- Recent Questions -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Questions You Might Answer</h3>
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Profile Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Your Profile
+                    </h4>
                 </div>
-                <div class="panel-body">
-                    {% if recent_questions %}
-                        {% for question in recent_questions %}
-                            <div class="question-card">
-                                <h4>
-                                    <a href="{{ url_for('question_detail', id=question.id) }}">{{ question.title }}</a>
-                                </h4>
-                                <p>{{ question.content[:150] }}{% if question.content|length > 150 %}...{% endif %}</p>
-                                <div class="question-meta">
-                                    <span class="text-muted">
-                                        Asked by {{ question.author.username }} 
-                                        on {{ question.created_at.strftime('%B %d, %Y') }}
-                                    </span>
-                                    <a href="{{ url_for('question_detail', id=question.id) }}" class="btn btn-sm btn-default">
-                                        Answer
-                                    </a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-center">No questions available to answer.</p>
-                    {% endif %}
+                <div class="card-body text-center">
+                    <img src="{{ url_for('static', filename='images/' + current_user.profile_image) }}" 
+                         alt="Profile" class="rounded-circle mb-3"
+                         style="width: 120px; height: 120px; object-fit: cover;">
+                    <h4>{{ current_user.username }}</h4>
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-building me-2"></i>{{ current_user.company or 'Add Company' }}
+                    </p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-envelope me-2"></i>{{ current_user.email }}
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-phone me-2"></i>{{ current_user.contact }}
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Impact Stats -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Your Impact
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <h3 class="text-primary mb-0">{{ answers|length }}</h3>
+                            <small class="text-muted">Questions Answered</small>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h3 class="text-success mb-0">5</h3>
+                            <small class="text-muted">Students Mentored</small>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="text-info mb-0">3</h3>
+                            <small class="text-muted">Events Hosted</small>
+                        </div>
+                        <div class="col-6">
+                            <h3 class="text-warning mb-0">2</h3>
+                            <small class="text-muted">Jobs Posted</small>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Quick Links -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-link me-2"></i>Quick Links
+                    </h4>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>My Mentees
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-briefcase me-2"></i>Posted Jobs
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-alt me-2"></i>My Events
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-comments me-2"></i>Discussion Forum
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Post Job Modal -->
+<div class="modal fade" id="postJobModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-briefcase me-2"></i>Post a Job
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('post_job') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Job Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Company</label>
+                        <input type="text" class="form-control" id="company" name="company" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Job Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="requirements" class="form-label">Requirements</label>
+                        <textarea class="form-control" id="requirements" name="requirements" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane me-2"></i>Post Job
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal fade" id="createEventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-plus me-2"></i>Create Event
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_event') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="event_title" class="form-label">Event Title</label>
+                        <input type="text" class="form-control" id="event_title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="event_description" class="form-label">Event Description</label>
+                        <textarea class="form-control" id="event_description" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="event_date" class="form-label">Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="event_date" name="date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Event
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <!-- Edit Profile Modal -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Edit Profile</h4>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-edit me-2"></i>Edit Profile
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('update_profile') }}" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="profile_image">Profile Image</label>
-                        <input type="file" class="form-control" id="profile_image" name="profile_image" 
-                               accept="image/*">
+                    <div class="mb-3 text-center">
+                        <img src="{{ url_for('static', filename='images/' + current_user.profile_image) }}" 
+                             class="rounded-circle profile-img mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                        <div class="mb-3">
+                            <label for="profile_image" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" id="profile_image" name="profile_image">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" 
-                               value="{{ current_user.email }}" required>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}">
                     </div>
-                    <div class="form-group">
-                        <label for="company">Current Company</label>
-                        <input type="text" class="form-control" id="company" name="company" 
-                               value="{{ current_user.company }}">
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Company</label>
+                        <input type="text" class="form-control" id="company" name="company" value="{{ current_user.company }}">
                     </div>
-                    <div class="form-group">
-                        <label for="position">Current Position</label>
-                        <input type="text" class="form-control" id="position" name="position" 
-                               value="{{ current_user.position }}">
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" id="contact" name="contact" value="{{ current_user.contact }}">
                     </div>
-                    <div class="form-group">
-                        <label for="bio">Bio</label>
-                        <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="new_password">New Password (leave blank to keep current)</label>
+                    <hr>
+                    <h6>Change Password</h6>
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password</label>
                         <input type="password" class="form-control" id="new_password" name="new_password">
                     </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm New Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<!-- Edit Expertise Modal -->
-<div class="modal fade" id="editExpertiseModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Edit Areas of Expertise</h4>
-            </div>
-            <form method="POST" action="{{ url_for('update_expertise') }}">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="expertise">Select Your Areas of Expertise</label>
-                        <select multiple class="form-control" id="expertise" name="expertise[]">
-                            <option value="web_development">Web Development</option>
-                            <option value="mobile_development">Mobile Development</option>
-                            <option value="data_science">Data Science</option>
-                            <option value="machine_learning">Machine Learning</option>
-                            <option value="cybersecurity">Cybersecurity</option>
-                            <option value="cloud_computing">Cloud Computing</option>
-                            <option value="devops">DevOps</option>
-                            <option value="ui_ux">UI/UX Design</option>
-                        </select>
-                        <small class="text-muted">Hold Ctrl/Cmd to select multiple areas</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<style>
-.profile-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    object-fit: cover;
-}
-
-.expertise-tags {
-    margin: -2px;
-}
-
-.expertise-tags .label {
-    display: inline-block;
-    margin: 2px;
-    padding: 5px 10px;
-    font-size: 12px;
-}
-
-.answer-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.answer-card:hover {
-    background-color: #f8f9fa;
-}
-
-.question-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.answer-content {
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.answer-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.answer-actions {
-    display: flex;
-    gap: 5px;
-}
-
-.question-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.question-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.mb-3 {
-    margin-bottom: 15px;
-}
-
-.panel {
-    margin-bottom: 20px;
-}
-
-.fas {
-    margin-right: 5px;
-}
-</style>
+{% endblock %}
 
 {% block extra_js %}
 <script>
-function editAnswer(answerId) {
-    // Implement answer edit functionality
-    console.log('Edit answer:', answerId);
-}
-
 function deleteAnswer(answerId) {
     if (confirm('Are you sure you want to delete this answer?')) {
         // Implement answer deletion

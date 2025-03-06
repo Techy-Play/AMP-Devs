@@ -3,110 +3,137 @@
 {% block title %}Login - Campus2Career{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="auth-form">
-                <h2 class="text-center mb-4">Login to Campus2Career</h2>
-                <div class="text-center mb-4">
-                    <p>Choose your role to continue</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sign-in-alt me-2"></i>Welcome Back!
+                    </h3>
+                    <p class="mb-0 mt-2">Login to access your account</p>
                 </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <!-- User Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label">I am a:</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="user_type" id="student" value="student" checked>
+                                    <label class="form-check-label" for="student">
+                                        <i class="fas fa-user-graduate me-1"></i>Student
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="user_type" id="alumni" value="alumni">
+                                    <label class="form-check-label" for="alumni">
+                                        <i class="fas fa-user-tie me-1"></i>Alumni
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="user_type" id="teacher" value="teacher">
+                                    <label class="form-check-label" for="teacher">
+                                        <i class="fas fa-chalkboard-teacher me-1"></i>Teacher
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Role Selection Tabs -->
-                <ul class="nav nav-tabs nav-justified mb-4" role="tablist">
-                    <li role="presentation" class="active">
-                        <a href="#student" aria-controls="student" role="tab" data-toggle="tab">Student</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#alumni" aria-controls="alumni" role="tab" data-toggle="tab">Alumni</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#teacher" aria-controls="teacher" role="tab" data-toggle="tab">Teacher</a>
-                    </li>
-                </ul>
-
-                <!-- Tab Content -->
-                <div class="tab-content">
-                    <!-- Student Login Form -->
-                    <div role="tabpanel" class="tab-pane active" id="student">
-                        <form method="POST" action="{{ url_for('login') }}">
-                            <input type="hidden" name="user_type" value="student">
-                            <div class="form-group">
-                                <label for="username">Username</label>
+                        <!-- Username -->
+                        <div class="mb-4">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
                                 <input type="text" class="form-control" id="username" name="username" required>
                             </div>
-                            <div class="form-group">
-                                <label for="password">Password</label>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
                                 <input type="password" class="form-control" id="password" name="password" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Login as Student</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <p>New student? <a href="{{ url_for('signup') }}">Sign up here</a></p>
                         </div>
-                    </div>
 
-                    <!-- Alumni Login Form -->
-                    <div role="tabpanel" class="tab-pane" id="alumni">
-                        <form method="POST" action="{{ url_for('login') }}">
-                            <input type="hidden" name="user_type" value="alumni">
-                            <div class="form-group">
-                                <label for="username_alumni">Username</label>
-                                <input type="text" class="form-control" id="username_alumni" name="username" required>
+                        <!-- Remember Me -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">
+                                    Remember me
+                                </label>
                             </div>
-                            <div class="form-group">
-                                <label for="password_alumni">Password</label>
-                                <input type="password" class="form-control" id="password_alumni" name="password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-block">Login as Alumni</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <p>Contact administration for alumni access</p>
                         </div>
-                    </div>
 
-                    <!-- Teacher Login Form -->
-                    <div role="tabpanel" class="tab-pane" id="teacher">
-                        <form method="POST" action="{{ url_for('login') }}">
-                            <input type="hidden" name="user_type" value="teacher">
-                            <div class="form-group">
-                                <label for="username_teacher">Username</label>
-                                <input type="text" class="form-control" id="username_teacher" name="username" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="password_teacher">Password</label>
-                                <input type="password" class="form-control" id="password_teacher" name="password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-block">Login as Teacher</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <p>Contact administration for teacher access</p>
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
                         </div>
-                    </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-0">Don't have an account? 
+                        <a href="{{ url_for('signup') }}" class="text-primary text-decoration-none">
+                            <i class="fas fa-user-plus me-1"></i>Sign Up
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="card mt-4 border-0 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Quick Tips
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Make sure you select the correct user type
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Usernames are case-sensitive
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Forgot password? Contact your administrator
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .auth-form {
-        margin-top: 30px;
+{% block extra_js %}
+<script>
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    const icon = this.querySelector('i');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
     }
-    .nav-tabs {
-        margin-bottom: 20px;
-    }
-    .tab-content {
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-top: none;
-        border-radius: 0 0 4px 4px;
-    }
-    .mt-3 {
-        margin-top: 15px;
-    }
-    .mb-4 {
-        margin-bottom: 20px;
-    }
-</style>
+});
+</script>
+{% endblock %}
 {% endblock %}

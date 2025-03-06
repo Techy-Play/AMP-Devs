@@ -2,94 +2,178 @@
 
 {% block title %}Student Dashboard - Campus2Career{% endblock %}
 
-{% block content %}
-<div class="container">
-    <div class="row">
-        <!-- Profile Section -->
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-body text-center">
-                    <img src="{{ url_for('static', filename='images/' + current_user.profile_image) }}" 
-                         alt="Profile" class="profile-img mb-3">
-                    <h3>{{ current_user.username }}</h3>
-                    <p class="text-muted">{{ current_user.course }}</p>
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">
-                        <i class="fas fa-edit"></i> Edit Profile
-                    </button>
-                </div>
-            </div>
+{% block extra_css %}
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.progress-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.dashboard-stat {
+    font-size: 2rem;
+    font-weight: 700;
+}
+</style>
+{% endblock %}
 
-            <!-- Quick Stats -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Activity Overview</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row text-center">
-                        <div class="col-xs-6">
-                            <h4>{{ questions|length }}</h4>
-                            <p>Questions Asked</p>
-                        </div>
-                        <div class="col-xs-6">
-                            <h4>{{ current_user.answers|length }}</h4>
-                            <p>Answers Given</p>
-                        </div>
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="Profile" class="rounded-circle me-4" style="width: 80px; height: 80px; object-fit: cover;">
+                    <div>
+                        <h2 class="mb-0">Welcome back, {{ current_user.name }}</h2>
+                        <p class="text-muted mb-0">{{ current_user.email }}</p>
+                    </div>
+                    <div class="ms-auto">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                            <i class="fas fa-question-circle me-2"></i>Ask a Question
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Main Content Section -->
-        <div class="col-md-8">
-            <!-- My Questions -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">My Questions</h3>
-                </div>
-                <div class="panel-body">
-                    {% if questions %}
-                        {% for question in questions %}
-                            <div class="question-card">
-                                <h4>
-                                    <a href="{{ url_for('question_detail', id=question.id) }}">{{ question.title }}</a>
-                                </h4>
-                                <p>{{ question.content[:200] }}{% if question.content|length > 200 %}...{% endif %}</p>
-                                <div class="question-meta">
-                                    <span class="text-muted">
-                                        Posted on {{ question.created_at.strftime('%B %d, %Y') }}
-                                    </span>
-                                    <span class="badge">{{ question.answers|length }} answers</span>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="text-center">You haven't asked any questions yet.</p>
-                        <div class="text-center">
-                            <a href="{{ url_for('questions') }}" class="btn btn-primary">
-                                Ask a Question
-                            </a>
-                        </div>
-                    {% endif %}
+    <!-- Stats Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card hover-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-book fa-2x text-primary mb-3"></i>
+                    <h3 class="dashboard-stat">4</h3>
+                    <p class="text-muted mb-0">Active Courses</p>
                 </div>
             </div>
-
-            <!-- Upcoming Events -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Upcoming Events</h3>
+        </div>
+        <div class="col-md-3">
+            <div class="card hover-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-2x text-success mb-3"></i>
+                    <h3 class="dashboard-stat">12</h3>
+                    <p class="text-muted mb-0">Completed Assignments</p>
                 </div>
-                <div class="panel-body">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card hover-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-certificate fa-2x text-warning mb-3"></i>
+                    <h3 class="dashboard-stat">2</h3>
+                    <p class="text-muted mb-0">Certifications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card hover-card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x text-danger mb-3"></i>
+                    <h3 class="dashboard-stat">86%</h3>
+                    <p class="text-muted mb-0">Overall Progress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">My Courses</h5>
+                </div>
+                <div class="card-body">
                     <div class="list-group">
-                        {% for event in upcoming_events %}
-                            <a href="#" class="list-group-item">
-                                <h4 class="list-group-item-heading">{{ event.title }}</h4>
-                                <p class="list-group-item-text">
-                                    <i class="fas fa-calendar"></i> {{ event.date.strftime('%B %d, %Y at %I:%M %p') }}
-                                </p>
-                            </a>
-                        {% else %}
-                            <p class="text-center">No upcoming events.</p>
-                        {% endfor %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Introduction to Career Planning</h5>
+                                <span class="badge bg-success">In Progress</span>
+                            </div>
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <p class="mb-1 text-muted">Learn the fundamentals of career planning and development</p>
+                                <span class="text-primary">75% Complete</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Resume Building Workshop</h5>
+                                <span class="badge bg-primary">In Progress</span>
+                            </div>
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <p class="mb-1 text-muted">Create a professional resume that stands out</p>
+                                <span class="text-primary">40% Complete</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Tasks -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Upcoming Tasks</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-0">Submit Resume Draft</h6>
+                                <small class="text-muted">Resume Building Workshop</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill">2 days left</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-0">Complete Career Assessment</h6>
+                                <small class="text-muted">Introduction to Career Planning</small>
+                            </div>
+                            <span class="badge bg-warning rounded-pill">5 days left</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-0">Schedule Mock Interview</h6>
+                                <small class="text-muted">Interview Preparation</small>
+                            </div>
+                            <span class="badge bg-info rounded-pill">1 week left</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Recent Announcements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-3">
+                        <h6 class="alert-heading mb-1">Career Fair Next Month</h6>
+                        <p class="mb-0">Annual career fair will be held on April 15. Prepare your resumes!</p>
+                        <small class="text-muted">Posted 2 days ago</small>
+                    </div>
+                    <div class="alert alert-success mb-0">
+                        <h6 class="alert-heading mb-1">New Course Available</h6>
+                        <p class="mb-0">Check out our new course on LinkedIn Networking Strategies</p>
+                        <small class="text-muted">Posted 1 week ago</small>
                     </div>
                 </div>
             </div>
@@ -97,129 +181,46 @@
     </div>
 </div>
 
-<!-- Edit Profile Modal -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<!-- Ask Question Modal -->
+<div class="modal fade" id="askQuestionModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Edit Profile</h4>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-question-circle me-2"></i>Ask a Question
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ url_for('update_profile') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ url_for('questions') }}">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="profile_image">Profile Image</label>
-                        <input type="file" class="form-control" id="profile_image" name="profile_image" 
-                               accept="image/*">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Question Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               placeholder="What's your question about?">
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" 
-                               value="{{ current_user.email }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contact">Contact Number</label>
-                        <input type="tel" class="form-control" id="contact" name="contact" 
-                               value="{{ current_user.contact }}" pattern="[0-9]{10}">
-                    </div>
-                    <div class="form-group">
-                        <label for="course">Course</label>
-                        <select class="form-control" id="course" name="course" required>
-                            <option value="btech" {% if current_user.course == 'btech' %}selected{% endif %}>B.Tech</option>
-                            <option value="bca" {% if current_user.course == 'bca' %}selected{% endif %}>BCA</option>
-                            <option value="mca" {% if current_user.course == 'mca' %}selected{% endif %}>MCA</option>
-                            <option value="mtech" {% if current_user.course == 'mtech' %}selected{% endif %}>M.Tech</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="new_password">New Password (leave blank to keep current)</label>
-                        <input type="password" class="form-control" id="new_password" name="new_password">
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm New Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Question Details</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" required
+                                  placeholder="Provide more details about your question..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Post Question
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<style>
-.profile-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    object-fit: cover;
-}
-
-.question-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.question-card:hover {
-    background-color: #f8f9fa;
-}
-
-.question-meta {
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.mb-3 {
-    margin-bottom: 15px;
-}
-
-.panel {
-    margin-bottom: 20px;
-}
-
-.list-group-item-heading {
-    margin-bottom: 5px;
-}
-
-.list-group-item-text {
-    color: #666;
-}
-
-.fas {
-    margin-right: 5px;
-}
-</style>
+{% endblock %}
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Password confirmation validation
-    $('#new_password, #confirm_password').on('keyup', function() {
-        if ($('#new_password').val() && $('#new_password').val() !== $('#confirm_password').val()) {
-            $('#confirm_password')[0].setCustomValidity("Passwords don't match");
-        } else {
-            $('#confirm_password')[0].setCustomValidity('');
-        }
-    });
-
-    // Image preview
-    $('#profile_image').on('change', function() {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('.profile-img').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
+// Clear form when modal is closed
+document.getElementById('askQuestionModal').addEventListener('hidden.bs.modal', function () {
+    this.querySelector('form').reset();
 });
 </script>
-{% endblock %}
 {% endblock %}

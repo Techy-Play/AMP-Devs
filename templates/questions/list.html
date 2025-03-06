@@ -3,91 +3,121 @@
 {% block title %}Discussion Forum - Campus2Career{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Discussion Forum</h3>
+<div class="container py-4">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Ask Question Button -->
+            {% if current_user.is_authenticated %}
+            <div class="mb-4">
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                    <i class="fas fa-question-circle me-2"></i>Ask a Question
+                </button>
             </div>
-            <div class="panel-body">
-                {% if current_user.is_authenticated %}
-                    <button class="btn btn-primary mb-4" data-toggle="modal" data-target="#askQuestionModal">
-                        <i class="fas fa-plus"></i> Ask a Question
-                    </button>
-                {% else %}
-                    <div class="alert alert-info">
-                        <a href="{{ url_for('login') }}">Login</a> to ask questions and participate in discussions.
-                    </div>
-                {% endif %}
+            {% endif %}
 
-                <!-- Questions List -->
-                {% if questions %}
-                    {% for question in questions %}
-                        <div class="card question-card">
-                            <div class="row">
-                                <div class="col-md-2 text-center stats">
-                                    <div class="answers-count">
-                                        <h3>{{ question.answers|length }}</h3>
-                                        <span>answers</span>
+            <!-- Questions List -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-comments me-2"></i>Discussion Forum
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if questions %}
+                        {% for question in questions %}
+                            <div class="card mb-3 question-card hover-shadow">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="{{ url_for('static', filename='images/' + question.author.profile_image) }}" 
+                                             alt="Profile" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-0">{{ question.author.username }}</h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                {{ question.created_at.strftime('%B %d, %Y') }}
+                                            </small>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-10">
-                                    <h3><a href="{{ url_for('question_detail', id=question.id) }}">{{ question.title }}</a></h3>
-                                    <p>{{ question.content[:200] }}{% if question.content|length > 200 %}...{% endif %}</p>
-                                    <div class="question-meta">
-                                        <span class="text-muted">
-                                            Asked by {{ question.author.username }} on {{ question.created_at.strftime('%B %d, %Y') }}
-                                        </span>
+                                    <h5 class="card-title">
+                                        <a href="{{ url_for('question_detail', id=question.id) }}" class="text-decoration-none text-dark">
+                                            {{ question.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text">{{ question.content[:200] }}...</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-primary me-2">
+                                                <i class="fas fa-comment me-1"></i>
+                                                {{ question.answers|length }} Answers
+                                            </span>
+                                        </div>
+                                        <a href="{{ url_for('question_detail', id=question.id) }}" class="btn btn-outline-primary btn-sm">
+                                            Read More <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                            <h5>No questions yet</h5>
+                            <p class="text-muted">Be the first to start a discussion!</p>
+                            {% if current_user.is_authenticated %}
+                                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#askQuestionModal">
+                                    <i class="fas fa-plus me-2"></i>Ask a Question
+                                </button>
+                            {% endif %}
                         </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center">
-                        <p>No questions have been asked yet.</p>
-                        {% if current_user.is_authenticated %}
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#askQuestionModal">
-                                Be the first to ask a question!
-                            </button>
-                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Tips -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Discussion Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Be clear and specific in your questions
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Share your thoughts and experiences
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Be respectful to other members
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Popular Tags -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tags me-2"></i>Popular Topics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-primary">Career Advice</span>
+                        <span class="badge bg-primary">Internships</span>
+                        <span class="badge bg-primary">Resume Tips</span>
+                        <span class="badge bg-primary">Interview Prep</span>
+                        <span class="badge bg-primary">Job Search</span>
+                        <span class="badge bg-primary">Networking</span>
                     </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="col-md-4">
-        <!-- Guidelines Panel -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Discussion Guidelines</h3>
-            </div>
-            <div class="panel-body">
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-check text-success"></i> Keep discussions respectful and professional</li>
-                    <li><i class="fas fa-check text-success"></i> Be clear and specific in your questions</li>
-                    <li><i class="fas fa-check text-success"></i> Share your knowledge to help others</li>
-                    <li><i class="fas fa-check text-success"></i> Use appropriate tags for better visibility</li>
-                    <li><i class="fas fa-times text-danger"></i> Avoid posting personal information</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Top Contributors Panel -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Top Contributors</h3>
-            </div>
-            <div class="panel-body">
-                <div class="list-group">
-                    {% for user in top_users %}
-                        <a href="#" class="list-group-item">
-                            <span class="badge">{{ user.answers|length }}</span>
-                            {{ user.username }}
-                        </a>
-                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -95,29 +125,33 @@
 </div>
 
 <!-- Ask Question Modal -->
-<div class="modal fade" id="askQuestionModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="askQuestionModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Ask a Question</h4>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-question-circle me-2"></i>Ask a Question
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('questions') }}">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="title">Question Title</label>
-                        <input type="text" class="form-control" id="title" name="title" 
-                               placeholder="What's your question?" required>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Question Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               placeholder="What's your question about?">
                     </div>
-                    <div class="form-group">
-                        <label for="content">Question Details</label>
-                        <textarea class="form-control" id="content" name="content" rows="5" 
-                                  placeholder="Provide more details about your question..." required></textarea>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Question Details</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" required
+                                  placeholder="Provide more details about your question..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Post Question</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Post Question
+                    </button>
                 </div>
             </form>
         </div>
@@ -125,55 +159,20 @@
 </div>
 
 <style>
-.question-card {
-    margin-bottom: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.hover-shadow {
+    transition: all 0.3s ease;
 }
-
-.question-card:hover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.stats {
-    padding: 15px;
-}
-
-.answers-count {
-    color: #5cb85c;
-}
-
-.answers-count h3 {
-    margin: 0;
-    font-size: 24px;
-}
-
-.question-meta {
-    margin-top: 10px;
-    font-size: 0.9em;
-}
-
-.mb-4 {
-    margin-bottom: 20px;
-}
-
-.panel-body .fas {
-    margin-right: 10px;
-}
-
-.list-unstyled li {
-    margin-bottom: 10px;
+.hover-shadow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 </style>
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Clear form when modal is closed
-    $('#askQuestionModal').on('hidden.bs.modal', function () {
-        $(this).find('form')[0].reset();
-    });
+// Clear form when modal is closed
+document.getElementById('askQuestionModal').addEventListener('hidden.bs.modal', function () {
+    this.querySelector('form').reset();
 });
 </script>
 {% endblock %}

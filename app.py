@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from models import db, User, Question, Answer, Event, Job
 import os
@@ -31,7 +32,7 @@ def init_db():
                 email='admin@campus2career.com',
                 role='admin'
             )
-            admin.set_password('admin123')  # Change this in production
+            admin.set_password('admin')  # Change this in production
             db.session.add(admin)
             db.session.commit()
 
@@ -171,6 +172,37 @@ def alumni_dashboard():
         return redirect(url_for('dashboard'))
     answers = Answer.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard/alumni.html', answers=answers)
+
+@app.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    if request.method == 'POST':
+        user = User.query.get(current_user.id)
+        
+        # Handle profile image upload
+        if 'profile_image' in request.files:
+            file = request.files['profile_image']
+            if file and file.filename:
+                # Save the file
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.static_folder, 'images', filename))
+                user.profile_image = filename
+
+        # Update other fields
+        user.email = request.form.get('email')
+        user.contact = request.form.get('contact')
+        user.course = request.form.get('course')
+
+        # Update password if provided
+        new_password = request.form.get('new_password')
+        if new_password:
+            user.set_password(new_password)
+
+        db.session.commit()
+        flash('Profile updated successfully')
+        return redirect(url_for('dashboard'))
+
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     init_db()

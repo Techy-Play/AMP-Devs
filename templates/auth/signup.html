@@ -3,108 +3,218 @@
 {% block title %}Sign Up - Campus2Career{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="auth-form">
-                <h2 class="text-center mb-4">Student Registration</h2>
-                <form method="POST" action="{{ url_for('signup') }}">
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Join Campus2Career
+                    </h3>
+                    <p class="mb-0 mt-2">Create your account to get started! 🚀</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('signup') }}" enctype="multipart/form-data">
+                        <!-- User Type Selection -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <label class="form-label">I want to join as:</label>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="user_type" id="student" value="student" checked>
+                                        <label class="form-check-label" for="student">
+                                            <i class="fas fa-user-graduate me-1"></i>Student
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="user_type" id="alumni" value="alumni">
+                                        <label class="form-check-label" for="alumni">
+                                            <i class="fas fa-user-tie me-1"></i>Alumni
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="email">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
+                        <div class="row g-3">
+                            <!-- Basic Info -->
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="username" name="username" required>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="course">Course</label>
-                        <select class="form-control" id="course" name="course" required>
-                            <option value="">Select your course</option>
-                            <option value="btech">B.Tech</option>
-                            <option value="bca">BCA</option>
-                            <option value="mca">MCA</option>
-                            <option value="mtech">M.Tech</option>
-                            <option value="bsc">B.Sc</option>
-                            <option value="msc">M.Sc</option>
-                        </select>
-                    </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="contact">Contact Number</label>
-                        <input type="tel" class="form-control" id="contact" name="contact" 
-                               pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
-                    </div>
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="dob">Date of Birth</label>
-                        <input type="date" class="form-control" id="dob" name="dob" required>
-                    </div>
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" 
-                               pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-                               title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                               required>
-                    </div>
+                            <!-- Additional Info -->
+                            <div class="col-md-6">
+                                <label for="course" class="form-label">Course/Department</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="course" name="course" required>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                    </div>
+                            <div class="col-md-6">
+                                <label for="contact" class="form-label">Contact Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-phone"></i>
+                                    </span>
+                                    <input type="tel" class="form-control" id="contact" name="contact" required>
+                                </div>
+                            </div>
 
-                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                            <div class="col-md-6">
+                                <label for="dob" class="form-label">Date of Birth</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar"></i>
+                                    </span>
+                                    <input type="date" class="form-control" id="dob" name="dob" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="profile_image" class="form-label">Profile Picture</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-image"></i>
+                                    </span>
+                                    <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <div class="mt-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" class="text-primary">Terms & Conditions</a>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-0">Already have an account? 
+                        <a href="{{ url_for('login') }}" class="text-primary text-decoration-none">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Tips -->
+            <div class="card mt-4 border-0 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Registration Tips
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Use a strong password with letters, numbers, and symbols
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Upload a clear profile picture (optional)
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Make sure all details are accurate
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .auth-form {
-        margin-top: 30px;
-        margin-bottom: 30px;
-        padding: 30px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .mb-4 {
-        margin-bottom: 20px;
-    }
-    .mt-3 {
-        margin-top: 15px;
-    }
-</style>
-
+{% block extra_js %}
 <script>
-document.getElementById('confirm_password').addEventListener('input', function() {
-    var password = document.getElementById('password');
-    var confirm_password = this;
+// Toggle password visibility
+function togglePasswordVisibility(inputId, buttonId) {
+    const input = document.getElementById(inputId);
+    const button = document.getElementById(buttonId);
+    const icon = button.querySelector('i');
     
-    if (password.value !== confirm_password.value) {
-        confirm_password.setCustomValidity("Passwords don't match");
-    } else {
-        confirm_password.setCustomValidity('');
-    }
-});
+    button.addEventListener('click', function() {
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+}
 
-// Validate password complexity
-document.getElementById('password').addEventListener('input', function() {
-    var password = this;
-    var pattern = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
-    
-    if (!pattern.test(password.value)) {
-        password.setCustomValidity("Password must contain at least one number, one uppercase and lowercase letter, and be at least 8 characters long");
-    } else {
-        password.setCustomValidity('');
+// Initialize password toggles
+togglePasswordVisibility('password', 'togglePassword');
+togglePasswordVisibility('confirm_password', 'toggleConfirmPassword');
+
+// Preview profile image
+document.getElementById('profile_image').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // You could add image preview functionality here if desired
+            console.log('Image selected');
+        };
+        reader.readAsDataURL(this.files[0]);
     }
 });
 </script>
+{% endblock %}
 {% endblock %}
