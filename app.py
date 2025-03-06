@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from models import db, User, Question, Answer, Event, Job
 import os
+from sqlalchemy import or_
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'  # Change this to a secure key in production
@@ -45,19 +46,52 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Check if admin login is requested via query parameter
+    login_type = request.args.get('type', '')
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         user_type = request.form.get('user_type')
         
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password) and user.role == user_type:
-            login_user(user)
-            return redirect(url_for('dashboard'))
-        flash('Invalid username or password')
-    return render_template('auth/login.html')
+        # Admin specific login logic
+        if user_type == 'admin':
+            if username == 'admin' and password == 'admin':
+                # Check if admin user exists in database
+                admin = User.query.filter_by(username='admin', role='admin').first()
+                
+                # Create admin user if it doesn't exist
+                if not admin:
+                    admin = User(
+                        username='admin',
+                        email='admin@campus2career.com',
+                        name='Administrator',
+                        role='admin',
+                        profile_image='images/default.png'  # Make sure this exists
+                    )
+                    admin.set_password('admin')
+                    db.session.add(admin)
+                    db.session.commit()
+                
+                login_user(admin)
+                flash('Welcome to the admin dashboard')
+                return redirect(url_for('admin_dashboard'))
+            else:
+                flash('Invalid admin credentials')
+        # Regular user login
+        else:
+            user = User.query.filter_by(username=username).first()
+            if user and user.check_password(password) and user.role == user_type:
+                login_user(user)
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid username or password')
+    
+    # Pass login_type to template
+    return render_template('auth/login.html', login_type=login_type)
 
 @app.route('/signup', methods=['GET', 'POST'])
+
 def signup():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -148,7 +182,7 @@ def admin_dashboard():
     events = Event.query.all()
     questions = Question.query.all()
     jobs = Job.query.all()
-    return render_template('dashboard/admin.html', users=users, events=events, questions=questions, jobs=jobs)
+    return render_template('dashboard/admin.html', users=users, events=events, questions=questions, jobs=jobs, now=datetime.now())
 
 @app.route('/teacher/dashboard')
 @login_required
@@ -204,6 +238,178 @@ def update_profile():
         return redirect(url_for('dashboard'))
 
     return redirect(url_for('dashboard'))
+
+@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/admin/<action>', methods=['GET', 'POST'])
+@login_required
+def admin_dashboard_action(action=None):
+    # Check if the logged in user is an admin
+    if current_user.role != 'admin':
+        flash('You do not have permission to access the admin dashboard')
+        return redirect(url_for('dashboard'))
+    
+    # Handle POST requests for admin actions
+    if request.method == 'POST':
+        # Add User
+        if action == 'add_user':
+            username = request.form.get('username')
+            email = request.form.get('email')
+            name = request.form.get('name')
+            role = request.form.get('role')
+            password = request.form.get('password')
+            
+            # Check if username or email already exists
+            if User.query.filter_by(username=username).first():
+                flash(f'Username {username} already exists')
+                return redirect(url_for('admin_dashboard_action'))
+                
+            if User.query.filter_by(email=email).first():
+                flash(f'Email {email} already exists')
+                return redirect(url_for('admin_dashboard_action'))
+            
+            # Create new user
+            new_user = User(
+                username=username,
+                email=email,
+                name=name,
+                role=role,
+                profile_image='@@default.png'
+            )
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+            
+            flash(f'User {username} created successfully')
+            return redirect(url_for('admin_dashboard_action'))
+        
+        # Delete User
+        elif action == 'delete_user':
+            user_id = request.form.get('user_id')
+            user = User.query.get(user_id)
+            
+            if user:
+                if user.id == current_user.id:
+                    flash('You cannot delete your own account')
+                else:
+                    db.session.delete(user)
+                    db.session.commit()
+                    flash(f'User {user.username} deleted successfully')
+            else:
+                flash('User not found')
+                
+            return redirect(url_for('admin_dashboard_action'))
+        
+        # Update User
+        elif action == 'update_user':
+            user_id = request.form.get('user_id')
+            user = User.query.get(user_id)
+            
+            if user:
+                user.username = request.form.get('username')
+                user.email = request.form.get('email')
+                user.name = request.form.get('name')
+                user.role = request.form.get('role')
+                
+                # Update password if provided
+                new_password = request.form.get('password')
+                if new_password:
+                    user.set_password(new_password)
+                
+                db.session.commit()
+                flash(f'User {user.username} updated successfully')
+            else:
+                flash('User not found')
+                
+            return redirect(url_for('admin_dashboard_action'))
+        
+        # Delete Question
+        elif action == 'delete_question':
+            question_id = request.form.get('question_id')
+            question = Question.query.get(question_id)
+            
+            if question:
+                db.session.delete(question)
+                db.session.commit()
+                flash('Question deleted successfully')
+            else:
+                flash('Question not found')
+                
+            return redirect(url_for('admin_dashboard_action'))
+        
+        # Delete Event
+        elif action == 'delete_event':
+            event_id = request.form.get('event_id')
+            event = Event.query.get(event_id)
+            
+            if event:
+                db.session.delete(event)
+                db.session.commit()
+                flash('Event deleted successfully')
+            else:
+                flash('Event not found')
+                
+            return redirect(url_for('admin_dashboard_action'))
+            
+        # Create Event
+        elif action == 'create_event':
+            title = request.form.get('title')
+            description = request.form.get('description')
+            date_str = request.form.get('date')
+            
+            try:
+                date = datetime.strptime(date_str, '%Y-%m-%dT%H:%M')
+                new_event = Event(
+                    title=title,
+                    description=description,
+                    date=date,
+                    created_by=current_user.id
+                )
+                db.session.add(new_event)
+                db.session.commit()
+                flash('Event created successfully')
+            except Exception as e:
+                flash(f'Error creating event: {str(e)}')
+                
+            return redirect(url_for('admin_dashboard_action'))
+    
+    # Get all data for admin dashboard
+    users = User.query.all()
+    questions = Question.query.order_by(Question.created_at.desc()).all()
+    events = Event.query.order_by(Event.date).all()
+    jobs = Job.query.order_by(Job.created_at.desc()).all() if 'Job' in globals() else []
+    
+    return render_template(
+        'dashboard/admin.html',
+        users=users,
+        events=events,
+        questions=questions,
+        jobs=jobs,
+        now=datetime.now()
+    )
+
+@app.route('/search')
+def search_users():
+    query = request.args.get('q', '').strip().lower()
+    if len(query) < 2:
+        return render_template('search_results.html', users=[])
+
+    # Search users by username
+    users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+    
+    return render_template('search_results.html', users=users)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', user=current_user)
 
 if __name__ == '__main__':
     init_db()

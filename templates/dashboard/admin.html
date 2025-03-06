@@ -65,282 +65,439 @@
     height: 32px;
     border-radius: 50%;
     margin-right: 10px;
+    object-fit: cover;
 }
 
-.nav-tabs {
-    margin-bottom: 20px;
+.badge-role {
+    font-size: 85%;
 }
+
+.badge-student { background-color: #17a2b8; }
+.badge-alumni { background-color: #6f42c1; }
+.badge-teacher { background-color: #fd7e14; }
+.badge-admin { background-color: #dc3545; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2>Admin Dashboard</h2>
-        <p class="text-muted">Welcome back, {{ current_user.username }}</p>
+<div class="container py-4">
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="mb-0">Admin Dashboard</h2>
+            <p class="text-muted mb-0">Manage your platform</p>
+        </div>
+        <div class="col-auto">
+            <span class="badge bg-dark p-2">
+                <i class="fas fa-user-shield me-1"></i>
+                Logged in as {{ current_user.username }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="dashboard-stats stats-users d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <div>
+                    <div class="stat-number">{{ users|length }}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stats stats-questions d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-question-circle fa-2x"></i>
+                </div>
+                <div>
+                    <div class="stat-number">{{ questions|length }}</div>
+                    <div class="stat-label">Questions</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stats stats-events d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-calendar-alt fa-2x"></i>
+                </div>
+                <div>
+                    <div class="stat-number">{{ events|length }}</div>
+                    <div class="stat-label">Events</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-stats stats-jobs d-flex align-items-center">
+                <div class="me-3">
+                    <i class="fas fa-briefcase fa-2x"></i>
+                </div>
+                <div>
+                    <div class="stat-number">{{ jobs|length }}</div>
+                    <div class="stat-label">Job Postings</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                        <i class="fas fa-users me-1"></i> Users
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab">
+                        <i class="fas fa-question-circle me-1"></i> Questions
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab">
+                        <i class="fas fa-calendar-alt me-1"></i> Events
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button" role="tab">
+                        <i class="fas fa-briefcase me-1"></i> Jobs
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="adminTabContent">
+                <!-- Users Tab -->
+                <div class="tab-pane fade show active" id="users" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">User Management</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="fas fa-plus me-1"></i> Add User
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Email</th>
+                                            <th>Joined</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ url_for('static', filename='images/' + user.profile_image) if user.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
+                                                         alt="Profile" class="user-avatar">
+                                                    <span>{{ user.username }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ user.role }} badge-role">
+                                                    {% if user.role == 'student' %}
+                                                        <i class="fas fa-user-graduate me-1"></i>
+                                                    {% elif user.role == 'alumni' %}
+                                                        <i class="fas fa-user-tie me-1"></i>
+                                                    {% elif user.role == 'teacher' %}
+                                                        <i class="fas fa-chalkboard-teacher me-1"></i>
+                                                    {% elif user.role == 'admin' %}
+                                                        <i class="fas fa-user-shield me-1"></i>
+                                                    {% endif %}
+                                                    {{ user.role|capitalize }}
+                                                </span>
+                                            </td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</td>
+                                            <td>
+                                                <span class="badge bg-success">Active</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" onclick="editUser('{{ user.id }}')" data-bs-toggle="tooltip" title="Edit User">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-warning" onclick="resetPassword('{{ user.id }}')" data-bs-toggle="tooltip" title="Reset Password">
+                                                        <i class="fas fa-key"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" onclick="deleteUser('{{ user.id }}')" data-bs-toggle="tooltip" title="Delete User">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Tab -->
+                <div class="tab-pane fade" id="questions" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Question Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Author</th>
+                                            <th>Posted</th>
+                                            <th>Answers</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for question in questions %}
+                                        <tr>
+                                            <td>{{ question.title }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ url_for('static', filename='images/' + question.author.profile_image) if question.author.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
+                                                         alt="Profile" class="user-avatar">
+                                                    {{ question.author.username }}
+                                                </div>
+                                            </td>
+                                            <td>{{ question.created_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <span class="badge rounded-pill bg-info text-white">
+                                                    {{ question.answers|length }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('question_detail', id=question.id) }}" class="btn btn-outline-info" data-bs-toggle="tooltip" title="View Question">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <button class="btn btn-outline-primary" onclick="editQuestion('{{ question.id }}')" data-bs-toggle="tooltip" title="Edit Question">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" onclick="deleteQuestion('{{ question.id }}')" data-bs-toggle="tooltip" title="Delete Question">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Events Tab -->
+                <div class="tab-pane fade" id="events" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Event Management</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                                <i class="fas fa-plus me-1"></i> Create Event
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Date</th>
+                                            <th>Organizer</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for event in events %}
+                                        <tr>
+                                            <td>{{ event.title }}</td>
+                                            <td>{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ url_for('static', filename='images/' + event.creator.profile_image) if event.creator and event.creator.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
+                                                         alt="Profile" class="user-avatar">
+                                                    {{ event.creator.username if event.creator else 'Unknown' }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if event.date > now %}
+                                                    <span class="badge bg-primary">Upcoming</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Past</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" onclick="editEvent('{{ event.id }}')" data-bs-toggle="tooltip" title="Edit Event">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" onclick="deleteEvent('{{ event.id }}')" data-bs-toggle="tooltip" title="Delete Event">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jobs Tab -->
+                <div class="tab-pane fade" id="jobs" role="tabpanel">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Job Management</h5>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createJobModal">
+                                <i class="fas fa-plus me-1"></i> Post Job
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Company</th>
+                                            <th>Posted By</th>
+                                            <th>Posted Date</th>
+                                            <th>Type</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for job in jobs %}
+                                        <tr>
+                                            <td>{{ job.title }}</td>
+                                            <td>{{ job.company }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ url_for('static', filename='images/' + job.poster.profile_image) if job.poster and job.poster.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
+                                                         alt="Profile" class="user-avatar">
+                                                    {{ job.poster.username if job.poster else 'Unknown' }}
+                                                </div>
+                                            </td>
+                                            <td>{{ job.created_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <span class="badge bg-info">{{ job.job_type }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" onclick="editJob('{{ job.id }}')" data-bs-toggle="tooltip" title="Edit Job">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-danger" onclick="deleteJob('{{ job.id }}')" data-bs-toggle="tooltip" title="Delete Job">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Statistics -->
-<div class="row">
-    <div class="col-md-3">
-        <div class="dashboard-stats stats-users">
-            <div class="stat-number">{{ users|length }}</div>
-            <div class="stat-label">Total Users</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="dashboard-stats stats-questions">
-            <div class="stat-number">{{ questions|length }}</div>
-            <div class="stat-label">Questions</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="dashboard-stats stats-events">
-            <div class="stat-number">{{ events|length }}</div>
-            <div class="stat-label">Events</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="dashboard-stats stats-jobs">
-            <div class="stat-number">{{ jobs|length }}</div>
-            <div class="stat-label">Job Postings</div>
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus me-2"></i>Add New User
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Fix the form action to use the admin_dashboard route with a parameter -->
+            <form method="POST" action="{{ url_for('admin_dashboard', action='add_user') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>                        
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="student">Student</option>
+                            <option value="alumni">Alumni</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add User</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Main Content -->
-<div class="row">
-    <div class="col-md-12">
-        <!-- Navigation Tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
-                <a href="#users" aria-controls="users" role="tab" data-toggle="tab">
-                    <i class="fas fa-users"></i> Users
-                </a>
-            </li>
-            <li role="presentation">
-                <a href="#questions" aria-controls="questions" role="tab" data-toggle="tab">
-                    <i class="fas fa-question-circle"></i> Questions
-                </a>
-            </li>
-            <li role="presentation">
-                <a href="#events" aria-controls="events" role="tab" data-toggle="tab">
-                    <i class="fas fa-calendar"></i> Events
-                </a>
-            </li>
-            <li role="presentation">
-                <a href="#jobs" aria-controls="jobs" role="tab" data-toggle="tab">
-                    <i class="fas fa-briefcase"></i> Jobs
-                </a>
-            </li>
-        </ul>
+<!-- Delete User Form -->
+<form id="deleteUserForm" method="POST" action="{{ url_for('admin_dashboard', action='delete_user') }}" style="display: none;">
+    <input type="hidden" id="delete_user_id" name="user_id">
+</form>
 
-        <!-- Tab Content -->
-        <div class="tab-content">
-            <!-- Users Tab -->
-            <div role="tabpanel" class="tab-pane active" id="users">
-                <div class="admin-card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>User Management</h4>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">
-                                    <i class="fas fa-plus"></i> Add User
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Role</th>
-                                        <th>Email</th>
-                                        <th>Joined</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for user in users %}
-                                    <tr>
-                                        <td>
-                                            <img src="{{ url_for('static', filename='images/' + user.profile_image) }}" 
-                                                 alt="Profile" class="user-avatar">
-                                            {{ user.username }}
-                                        </td>
-                                        <td><span class="label label-info">{{ user.role }}</span></td>
-                                        <td>{{ user.email }}</td>
-                                        <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
-                                        <td><span class="label label-success">Active</span></td>
-                                        <td class="table-actions">
-                                            <button class="btn btn-sm btn-primary" onclick="editUser('{{ user.id }}')">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="deleteUser('{{ user.id }}')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Update User Form -->
+<form method="POST" action="{{ url_for('admin_dashboard', action='update_user') }}">
+    <input type="hidden" id="edit_user_id" name="user_id">
+    <!-- rest of form fields -->
+</form>
 
-            <!-- Questions Tab -->
-            <div role="tabpanel" class="tab-pane" id="questions">
-                <div class="admin-card">
-                    <div class="card-header">
-                        <h4>Question Management</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Author</th>
-                                        <th>Posted</th>
-                                        <th>Answers</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for question in questions %}
-                                    <tr>
-                                        <td>{{ question.title }}</td>
-                                        <td>{{ question.author.username }}</td>
-                                        <td>{{ question.created_at.strftime('%Y-%m-%d') }}</td>
-                                        <td>{{ question.answers|length }}</td>
-                                        <td class="table-actions">
-                                            <a href="{{ url_for('question_detail', id=question.id) }}" 
-                                               class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <button class="btn btn-sm btn-danger" 
-                                                    onclick="deleteQuestion('{{ question.id }}')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Delete Question Form -->
+<form id="deleteQuestionForm" method="POST" action="{{ url_for('admin_dashboard', action='delete_question') }}" style="display: none;">
+    <input type="hidden" id="delete_question_id" name="question_id">
+</form>
 
-            <!-- Events Tab -->
-            <div role="tabpanel" class="tab-pane" id="events">
-                <div class="admin-card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>Event Management</h4>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#createEventModal">
-                                    <i class="fas fa-plus"></i> Create Event
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Event</th>
-                                        <th>Date</th>
-                                        <th>Organizer</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for event in events %}
-                                    <tr>
-                                        <td>{{ event.title }}</td>
-                                        <td>{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
-                                        <td>{{ event.creator.username }}</td>
-                                        <td class="table-actions">
-                                            <button class="btn btn-sm btn-primary" onclick="editEvent('{{ event.id }}')">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="deleteEvent('{{ event.id }}')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Create Event Form -->
+<form method="POST" action="{{ url_for('admin_dashboard', action='create_event') }}">
+    <!-- form fields -->
+</form>
 
-            <!-- Jobs Tab -->
-            <div role="tabpanel" class="tab-pane" id="jobs">
-                <div class="admin-card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4>Job Management</h4>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#createJobModal">
-                                    <i class="fas fa-plus"></i> Post Job
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Position</th>
-                                        <th>Company</th>
-                                        <th>Posted By</th>
-                                        <th>Posted Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for job in jobs %}
-                                    <tr>
-                                        <td>{{ job.title }}</td>
-                                        <td>{{ job.company }}</td>
-                                        <td>{{ job.poster.username }}</td>
-                                        <td>{{ job.created_at.strftime('%Y-%m-%d') }}</td>
-                                        <td class="table-actions">
-                                            <button class="btn btn-sm btn-primary" onclick="editJob('{{ job.id }}')">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="deleteJob('{{ job.id }}')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Delete Event Form -->
+<form id="deleteEventForm" method="POST" action="{{ url_for('admin_dashboard', action='delete_event') }}" style="display: none;">
+    <input type="hidden" id="delete_event_id" name="event_id">
+</form>
 
 {% block extra_js %}
 <script>
@@ -351,15 +508,15 @@ function editUser(userId) {
 
 function deleteUser(userId) {
     if (confirm('Are you sure you want to delete this user?')) {
-        // Implement user deletion
-        console.log('Delete user:', userId);
+        document.getElementById('delete_user_id').value = userId;
+        document.getElementById('deleteUserForm').submit();
     }
 }
 
 function deleteQuestion(questionId) {
     if (confirm('Are you sure you want to delete this question?')) {
-        // Implement question deletion
-        console.log('Delete question:', questionId);
+        document.getElementById('delete_question_id').value = questionId;
+        document.getElementById('deleteQuestionForm').submit();
     }
 }
 
@@ -370,8 +527,8 @@ function editEvent(eventId) {
 
 function deleteEvent(eventId) {
     if (confirm('Are you sure you want to delete this event?')) {
-        // Implement event deletion
-        console.log('Delete event:', eventId);
+        document.getElementById('delete_event_id').value = eventId;
+        document.getElementById('deleteEventForm').submit();
     }
 }
 
@@ -382,8 +539,8 @@ function editJob(jobId) {
 
 function deleteJob(jobId) {
     if (confirm('Are you sure you want to delete this job?')) {
-        // Implement job deletion
-        console.log('Delete job:', jobId);
+        document.getElementById('delete_job_id').value = jobId;
+        document.getElementById('deleteJobForm').submit();
     }
 }
 

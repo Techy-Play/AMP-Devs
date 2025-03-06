@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - Campus2Career{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Search Results</h2>
+    <div class="row">
+        {% for user in users %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <img src="{{ user.profile_image or 'static/images/default.png' }}" alt="Profile Image" class="profile-img" style="width: 150px; height: 150px; border-radius: 50%;" />
+                    <h5 class="card-title">{{ user.username }}</h5>
+                    <p class="card-text">Role: {{ user.role }}</p>
+                    <p class="card-text">Email: {{ user.email }}</p>
+                    <p class="card-text">Contact: {{ user.contact }}</p>
+                    <p class="card-text">Course: {{ user.course }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

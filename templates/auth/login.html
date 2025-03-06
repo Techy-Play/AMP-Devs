@@ -20,7 +20,8 @@
                             <label class="form-label">I am a:</label>
                             <div class="d-flex gap-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="user_type" id="student" value="student" checked>
+                                    <input class="form-check-input" type="radio" name="user_type" id="student" value="student" 
+                                           {% if login_type != 'admin' %}checked{% endif %}>
                                     <label class="form-check-label" for="student">
                                         <i class="fas fa-user-graduate me-1"></i>Student
                                     </label>
@@ -31,12 +32,13 @@
                                         <i class="fas fa-user-tie me-1"></i>Alumni
                                     </label>
                                 </div>
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="user_type" id="admin" value="admin">
-                                        <label class="form-check-label" for="admin">
-                                            <i class="fas fa-chalkboard-teacher me-1"></i>Admin
-                                        </label>
+                              
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="user_type" id="admin" value="admin"
+                                           {% if login_type == 'admin' %}checked{% endif %}>
+                                    <label class="form-check-label" for="admin">
+                                        <i class="fas fa-user-shield me-1"></i>Admin
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +50,8 @@
                                 <span class="input-group-text">
                                     <i class="fas fa-user"></i>
                                 </span>
-                                <input type="text" class="form-control" id="username" name="username" required>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       {% if login_type == 'admin' %}value="admin"{% endif %} required>
                             </div>
                         </div>
 
@@ -118,6 +121,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
 {% block extra_js %}
 <script>
@@ -136,5 +140,4 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     }
 });
 </script>
-{% endblock %}
 {% endblock %}
