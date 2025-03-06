@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Campus2Career{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="auth-form">
+                <h2 class="text-center mb-4">Login to Campus2Career</h2>
+                <div class="text-center mb-4">
+                    <p>Choose your role to continue</p>
+                </div>
+
+                <!-- Role Selection Tabs -->
+                <ul class="nav nav-tabs nav-justified mb-4" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#student" aria-controls="student" role="tab" data-toggle="tab">Student</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#alumni" aria-controls="alumni" role="tab" data-toggle="tab">Alumni</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#teacher" aria-controls="teacher" role="tab" data-toggle="tab">Teacher</a>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Student Login Form -->
+                    <div role="tabpanel" class="tab-pane active" id="student">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="user_type" value="student">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login as Student</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>New student? <a href="{{ url_for('signup') }}">Sign up here</a></p>
+                        </div>
+                    </div>
+
+                    <!-- Alumni Login Form -->
+                    <div role="tabpanel" class="tab-pane" id="alumni">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="user_type" value="alumni">
+                            <div class="form-group">
+                                <label for="username_alumni">Username</label>
+                                <input type="text" class="form-control" id="username_alumni" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password_alumni">Password</label>
+                                <input type="password" class="form-control" id="password_alumni" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login as Alumni</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>Contact administration for alumni access</p>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Login Form -->
+                    <div role="tabpanel" class="tab-pane" id="teacher">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="user_type" value="teacher">
+                            <div class="form-group">
+                                <label for="username_teacher">Username</label>
+                                <input type="text" class="form-control" id="username_teacher" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password_teacher">Password</label>
+                                <input type="password" class="form-control" id="password_teacher" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login as Teacher</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <p>Contact administration for teacher access</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-form {
+        margin-top: 30px;
+    }
+    .nav-tabs {
+        margin-bottom: 20px;
+    }
+    .tab-content {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+    }
+    .mt-3 {
+        margin-top: 15px;
+    }
+    .mb-4 {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

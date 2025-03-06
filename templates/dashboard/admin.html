@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Campus2Career{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-stats {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.stats-users {
+    background: #3498db;
+}
+
+.stats-questions {
+    background: #2ecc71;
+}
+
+.stats-events {
+    background: #e74c3c;
+}
+
+.stats-jobs {
+    background: #9b59b6;
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.stat-label {
+    text-transform: uppercase;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.admin-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.admin-card .card-header {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-card .card-body {
+    padding: 20px;
+}
+
+.table-actions {
+    white-space: nowrap;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.nav-tabs {
+    margin-bottom: 20px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Admin Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ current_user.username }}</p>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="dashboard-stats stats-users">
+            <div class="stat-number">{{ users|length }}</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-stats stats-questions">
+            <div class="stat-number">{{ questions|length }}</div>
+            <div class="stat-label">Questions</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-stats stats-events">
+            <div class="stat-number">{{ events|length }}</div>
+            <div class="stat-label">Events</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-stats stats-jobs">
+            <div class="stat-number">{{ jobs|length }}</div>
+            <div class="stat-label">Job Postings</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row">
+    <div class="col-md-12">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#users" aria-controls="users" role="tab" data-toggle="tab">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#questions" aria-controls="questions" role="tab" data-toggle="tab">
+                    <i class="fas fa-question-circle"></i> Questions
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#events" aria-controls="events" role="tab" data-toggle="tab">
+                    <i class="fas fa-calendar"></i> Events
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#jobs" aria-controls="jobs" role="tab" data-toggle="tab">
+                    <i class="fas fa-briefcase"></i> Jobs
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Users Tab -->
+            <div role="tabpanel" class="tab-pane active" id="users">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>User Management</h4>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">
+                                    <i class="fas fa-plus"></i> Add User
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Role</th>
+                                        <th>Email</th>
+                                        <th>Joined</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>
+                                            <img src="{{ url_for('static', filename='images/' + user.profile_image) }}" 
+                                                 alt="Profile" class="user-avatar">
+                                            {{ user.username }}
+                                        </td>
+                                        <td><span class="label label-info">{{ user.role }}</span></td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td><span class="label label-success">Active</span></td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="editUser({{ user.id }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteUser({{ user.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Tab -->
+            <div role="tabpanel" class="tab-pane" id="questions">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h4>Question Management</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Author</th>
+                                        <th>Posted</th>
+                                        <th>Answers</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for question in questions %}
+                                    <tr>
+                                        <td>{{ question.title }}</td>
+                                        <td>{{ question.author.username }}</td>
+                                        <td>{{ question.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ question.answers|length }}</td>
+                                        <td class="table-actions">
+                                            <a href="{{ url_for('question_detail', id=question.id) }}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-danger" 
+                                                    onclick="deleteQuestion({{ question.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Tab -->
+            <div role="tabpanel" class="tab-pane" id="events">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Event Management</h4>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#createEventModal">
+                                    <i class="fas fa-plus"></i> Create Event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th>Organizer</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in events %}
+                                    <tr>
+                                        <td>{{ event.title }}</td>
+                                        <td>{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>{{ event.creator.username }}</td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="editEvent({{ event.id }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteEvent({{ event.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div role="tabpanel" class="tab-pane" id="jobs">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Job Management</h4>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#createJobModal">
+                                    <i class="fas fa-plus"></i> Post Job
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Position</th>
+                                        <th>Company</th>
+                                        <th>Posted By</th>
+                                        <th>Posted Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs %}
+                                    <tr>
+                                        <td>{{ job.title }}</td>
+                                        <td>{{ job.company }}</td>
+                                        <td>{{ job.poster.username }}</td>
+                                        <td>{{ job.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td class="table-actions">
+                                            <button class="btn btn-sm btn-primary" onclick="editJob({{ job.id }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="deleteJob({{ job.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function editUser(userId) {
+    // Implement user edit functionality
+    console.log('Edit user:', userId);
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        // Implement user deletion
+        console.log('Delete user:', userId);
+    }
+}
+
+function deleteQuestion(questionId) {
+    if (confirm('Are you sure you want to delete this question?')) {
+        // Implement question deletion
+        console.log('Delete question:', questionId);
+    }
+}
+
+function editEvent(eventId) {
+    // Implement event edit functionality
+    console.log('Edit event:', eventId);
+}
+
+function deleteEvent(eventId) {
+    if (confirm('Are you sure you want to delete this event?')) {
+        // Implement event deletion
+        console.log('Delete event:', eventId);
+    }
+}
+
+function editJob(jobId) {
+    // Implement job edit functionality
+    console.log('Edit job:', jobId);
+}
+
+function deleteJob(jobId) {
+    if (confirm('Are you sure you want to delete this job?')) {
+        // Implement job deletion
+        console.log('Delete job:', jobId);
+    }
+}
+
+$(document).ready(function() {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Handle tab changes
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        localStorage.setItem('lastAdminTab', $(e.target).attr('href'));
+    });
+    
+    // Restore last active tab
+    var lastTab = localStorage.getItem('lastAdminTab');
+    if (lastTab) {
+        $('a[href="' + lastTab + '"]').tab('show');
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,59 +1,142 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>
-            Campus2Career
-        </title>
-    
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-        <link rel="manifest" href="/site.webmanifest">    
-    </head>
+{% extends "base.html" %}
 
-        
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% block title %}Welcome to Campus2Career{% endblock %}
 
+{% block content %}
+<div class="jumbotron text-center">
+    <h1>Welcome to Campus2Career</h1>
+    <p>Connect, Learn, and Grow with your Campus Community</p>
+    {% if not current_user.is_authenticated %}
+        <p>
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Login</a>
+            <a href="{{ url_for('signup') }}" class="btn btn-success btn-lg">Sign Up</a>
+        </p>
+    {% endif %}
+</div>
 
-
-
-
-
-    <body>
-        <div>
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                            </button>
-                            <a class="navbar-brand" href="#">Campus2Career</a>
+<div class="row">
+    <!-- Recent Questions Section -->
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Recent Questions</h3>
+            </div>
+            <div class="panel-body">
+                {% if questions %}
+                    {% for question in questions %}
+                        <div class="card question-card">
+                            <h4><a href="{{ url_for('question_detail', id=question.id) }}">{{ question.title }}</a></h4>
+                            <p class="text-muted">
+                                Posted by {{ question.author.username }} on {{ question.created_at.strftime('%B %d, %Y') }}
+                            </p>
+                            <p>{{ question.content[:200] }}{% if question.content|length > 200 %}...{% endif %}</p>
+                            <div class="text-muted">
+                                <small>{{ question.answers|length }} answers</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-right">
+                        <a href="{{ url_for('questions') }}" class="btn btn-default">View All Questions</a>
                     </div>
-                    <div class="collapse navbar-collapse" id="myNavbar">
-                        <ul class="nav navbar-nav">
-                            <li class="active"><a href="{{url_for('index')}}">Home</a></li>
-                            <li><a href="{{url_for('about')}}">About</a></li>
-                            <li><a href="{{url_for('contact')}}">Contact</a></li>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a href="login.html"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                            <li><a href="login.html"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+                {% else %}
+                    <p class="text-center">No questions yet. 
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('questions') }}">Be the first to ask!</a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}">Login to ask a question!</a>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
         </div>
-    <div>
-        <h1>
-            Welcome to Campus2Career
-        </h1>
-    </div>        
+    </div>
 
-    </body>
-</html>
+    <!-- Upcoming Events Section -->
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Upcoming Events</h3>
+            </div>
+            <div class="panel-body">
+                {% if events %}
+                    {% for event in events %}
+                        <div class="card event-card">
+                            <h4>{{ event.title }}</h4>
+                            <p class="text-muted">
+                                <i class="fas fa-calendar"></i> {{ event.date.strftime('%B %d, %Y') }}
+                            </p>
+                            <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+                        </div>
+                    {% endfor %}
+                    <div class="text-right">
+                        <a href="{{ url_for('events') }}" class="btn btn-default">View All Events</a>
+                    </div>
+                {% else %}
+                    <p class="text-center">No upcoming events.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Quick Links</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <i class="fas fa-question-circle"></i>
+                        <a href="{{ url_for('questions') }}">Discussion Forum</a>
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <a href="{{ url_for('events') }}">Events Calendar</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="list-group-item">
+                            <i class="fas fa-user"></i>
+                            <a href="{{ url_for('dashboard') }}">My Dashboard</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.jumbotron {
+    background-color: #f8f9fa;
+    padding: 40px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+}
+
+.question-card {
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+.event-card {
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+.panel {
+    margin-bottom: 30px;
+}
+
+.list-group-item i {
+    margin-right: 10px;
+    color: #666;
+}
+
+.card h4 {
+    margin-top: 0;
+}
+
+.text-muted {
+    font-size: 0.9em;
+}
+</style>
+{% endblock %}
