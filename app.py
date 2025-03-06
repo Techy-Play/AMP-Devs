@@ -113,14 +113,14 @@ def dashboard():
 
 @app.route('/questions', methods=['GET', 'POST'])
 def questions():
-    if request.method == 'POST':
-        # Process the form submission
-        # ...
-        
-        # Redirect to the same page to avoid form resubmission
+    if request.method == 'POST' and current_user.is_authenticated:
+        title = request.form.get('title')
+        content = request.form.get('content')
+        question = Question(title=title, content=content, user_id=current_user.id)
+        db.session.add(question)
+        db.session.commit()
         return redirect(url_for('questions'))
     
-    # Fresh query of questions for GET requests
     questions = Question.query.order_by(Question.created_at.desc()).all()
     return render_template('questions/list.html', questions=questions)
 
