@@ -171,7 +171,7 @@
             <!-- Tab Content -->
             <div class="tab-content" id="adminTabContent">
                 <!-- Users Tab -->
-                <div class="tab-pane fade show active" id="users" role="tabpanel">
+                <div class="tab-pane fade show active" id="users" role="tabpanel" style="color: black;">
                     <div class="card shadow-sm">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">User Management</h5>
@@ -181,9 +181,9 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover" >
                                     <thead>
-                                        <tr>
+                                        <tr >
                                             <th>User</th>
                                             <th>Role</th>
                                             <th>Email</th>
@@ -203,7 +203,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ user.role }} badge-role">
+                                                <span style="color: black;" class="badge bg-{{ user.role }} badge-role">
                                                     {% if user.role == 'student' %}
                                                         <i class="fas fa-user-graduate me-1"></i>
                                                     {% elif user.role == 'alumni' %}
@@ -331,8 +331,7 @@
                                             <td>{{ event.date.strftime('%Y-%m-%d %H:%M') }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ url_for('static', filename='images/' + event.creator.profile_image) if event.creator and event.creator.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
-                                                         alt="Profile" class="user-avatar">
+                                                    <img src="{{ url_for('static', filename='images/' + (current_user.role == 'admin' and 'default.png' or current_user.profile_image)) }}" alt="Profile" class="rounded-circle me-4" style="width: 40px; height: 40px; object-fit: cover;" alt="Profile" class="user-avatar">
                                                     {{ event.creator.username if event.creator else 'Unknown' }}
                                                 </div>
                                             </td>
@@ -394,8 +393,7 @@
                                             <td>{{ job.company }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ url_for('static', filename='images/' + job.poster.profile_image) if job.poster and job.poster.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
-                                                         alt="Profile" class="user-avatar">
+                                                    <img src="{{ url_for('static', filename='images/' + (current_user.role == 'admin' and 'default.png' or current_user.profile_image)) }}" alt="Profile" class="rounded-circle me-4" style="width: 40px; height: 40px; object-fit: cover;" alt="Profile" class="user-avatar" alt="Profile" class="user-avatar">
                                                     {{ job.poster.username if job.poster else 'Unknown' }}
                                                 </div>
                                             </td>
@@ -542,6 +540,10 @@
                     <div class="mb-3">
                         <label for="company" class="form-label">Company</label>
                         <input type="text" class="form-control" id="company" name="company" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="company_contact" class="form-label">Company Contact</label>
+                        <input type="text" class="form-control" id="company_contact" name="company_contact" required>
                     </div>
                     <div class="mb-3">
                         <label for="job_description" class="form-label">Job Description</label>

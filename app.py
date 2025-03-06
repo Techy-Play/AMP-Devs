@@ -31,7 +31,8 @@ def init_db():
             admin = User(
                 username='admin',
                 email='admin@campus2career.com',
-                role='admin'
+                role='admin',
+                profile_image='@default.png'  # Set default profile image
             )
             admin.set_password('admin')  # Change this in production
             db.session.add(admin)
@@ -304,11 +305,69 @@ def admin_dashboard_action(action=None):
             db.session.commit()
             flash('Event created successfully')
             return redirect(url_for('admin_dashboard_action'))
+
+        elif action == 'add_user':
+            username = request.form.get('username')
+            email = request.form.get('email')
+            name = request.form.get('name')
+            role = request.form.get('role')
+            password = request.form.get('password')
+            
+            if User.query.filter_by(username=username).first():
+                flash(f'Username {username} already exists')
+                return redirect(url_for('admin_dashboard_action'))
+                
+            if User.query.filter_by(email=email).first():
+                flash(f'Email {email} already exists')
+                return redirect(url_for('admin_dashboard_action'))
+            
+            new_user = User(
+                username=username,
+                email=email,
+                name=name,
+                role=role,
+                profile_image='noimg.jpg'
+            )
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f'User {username} created successfully')
+            return redirect(url_for('admin_dashboard_action'))
+        
+        elif action == 'update_user':
+            user_id = request.form.get('user_id')
+            user = User.query.get(user_id)
+            if user:
+                user.username = request.form.get('username')
+                user.email = request.form.get('email')
+                user.name = request.form.get('name')
+                user.role = request.form.get('role')
+                
+                new_password = request.form.get('password')
+                if new_password:
+                    user.set_password(new_password)
+                
+                db.session.commit()
+                flash(f'User {user.username} updated successfully')
+            else:
+                flash('User not found')
+            return redirect(url_for('admin_dashboard_action'))
+
+        elif action == 'delete_question':
+            question_id = request.form.get('question_id')
+            question = Question.query.get(question_id)
+            if question:
+                db.session.delete(question)
+                db.session.commit()
+                flash('Question deleted successfully')
+            else:
+                flash('Question not found')
+            return redirect(url_for('admin_dashboard_action'))
     
     users = User.query.all()
     events = Event.query.all()
     jobs = Job.query.all()
-    return render_template('dashboard/admin.html', users=users, events=events, jobs=jobs)
+    return render_template('dashboard/admin.html', users=users, events=events, jobs=jobs, now=datetime.now())
 
 @app.route('/search')
 def search_users():

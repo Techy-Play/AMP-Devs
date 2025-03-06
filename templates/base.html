@@ -342,7 +342,7 @@
                     {% if current_user.is_authenticated %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <img src="{{ current_user.profile_image or '@@default.png' }}" alt="Profile" class="profile-img me-2" />
+                                <img src="{{ url_for('static', filename='images/' + (current_user.role == 'admin' and 'default.png' or current_user.profile_image)) }}" alt="Profile" class="rounded-circle me-4" style="width: 40px; height: 40px; object-fit: cover;">
                                 {{ current_user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">

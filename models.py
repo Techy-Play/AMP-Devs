@@ -17,10 +17,10 @@ class User(UserMixin, db.Model):
     profile_image = db.Column(db.String(120), default='noimg.jpg')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    questions = db.relationship('Question', backref='author', lazy=True)
-    answers = db.relationship('Answer', backref='author', lazy=True)
-    events = db.relationship('Event', backref='creator', lazy=True)
-    jobs = db.relationship('Job', backref='poster', lazy=True)
+    questions = db.relationship('Question', backref='author', lazy=True, cascade='all, delete-orphan')
+    answers = db.relationship('Answer', backref='author', lazy=True, cascade='all, delete-orphan')
+    events = db.relationship('Event', backref='creator', lazy=True, cascade='all, delete-orphan')
+    jobs = db.relationship('Job', backref='poster', lazy=True, cascade='all, delete-orphan')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

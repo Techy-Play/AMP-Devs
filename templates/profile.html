@@ -4,15 +4,15 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">User Profile</h2>
+    <h2 class="mb-4 text-center">User Profile</h2>
     <div class="card shadow-sm">
         <div class="card-body text-center">
-            <img src="{{ user.profile_image or 'images/default.png' }}" alt="Profile Image" class="profile-img" />
+            <img src="{{ url_for('static', filename='images/default.png') }}" alt="Profile" class="profile-img mb-3" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary-color);" />
             <h3 class="mt-3">{{ user.username }}</h3>
-            <p>Email: {{ user.email }}</p>
-            <p>Role: {{ user.role }}</p>
-            <p>Contact: {{ user.contact }}</p>
-            <p>Course: {{ user.course }}</p>
+            <p class="text-muted">Email: <strong>{{ user.email }}</strong></p>
+            <p class="text-muted">Role: <strong>{{ user.role }}</strong></p>
+            <p class="text-muted">Contact: <strong>{{ user.contact }}</strong></p>
+            <p class="text-muted">Course: <strong>{{ user.course }}</strong></p>
         </div>
     </div>
 </div>
