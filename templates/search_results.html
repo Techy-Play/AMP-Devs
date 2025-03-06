@@ -10,7 +10,7 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
-                    <img src="{{ user.profile_image or 'static/images/default.png' }}" alt="Profile Image" class="profile-img" style="width: 150px; height: 150px; border-radius: 50%;" />
+                    <img src="{{ user.dashboard_image or 'static/images/default.png' }}" alt="Profile Image" class="profile-img" style="width: 150px; height: 150px; border-radius: 50%;" />
                     <h5 class="card-title">{{ user.username }}</h5>
                     <p class="card-text">Role: {{ user.role }}</p>
                     <p class="card-text">Email: {{ user.email }}</p>
