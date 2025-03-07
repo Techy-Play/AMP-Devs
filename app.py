@@ -8,7 +8,7 @@ import os
 from sqlalchemy import or_
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'  # Change this to a secure key in production
+app.config['SECRET_KEY'] = '123456'  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///campus2career.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -32,9 +32,9 @@ def init_db():
                 username='admin',
                 email='admin@campus2career.com',
                 role='admin',
-                profile_image='@default.png'  # Set default profile image
+                profile_image='@images/default.png'  
             )
-            admin.set_password('admin')  # Change this in production
+            admin.set_password('admin')  
             db.session.add(admin)
             db.session.commit()
 
@@ -400,4 +400,4 @@ def job_listings():
 
 if __name__ == '__main__':
     init_db()
-    app.run(host='0.0.0.0', port=5000,debug=True)
+    app.run( port=5000,debug=True)

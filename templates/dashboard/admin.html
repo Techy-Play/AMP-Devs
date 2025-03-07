@@ -197,8 +197,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ url_for('static', filename='images/' + user.profile_image) if user.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
-                                                         alt="Profile" class="user-avatar">
+                                                    <img id="profileImage" src="{% if user.role == 'admin' %}{{ url_for('static', filename='images/default.png') }}{% else %}{{ url_for('static', filename='images/' + user.profile_image) }}{% endif %}" style="width: 40px; height: 40px; margin: 1%; border: rgb(0,0,0) solid 1px;" alt="Profile" class="user-avatar">
                                                     <span>{{ user.username }}</span>
                                                 </div>
                                             </td>
@@ -270,8 +269,7 @@
                                             <td>{{ question.title }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ url_for('static', filename='images/' + question.author.profile_image) if question.author.profile_image else url_for('static', filename='img/default-avatar.png') }}" 
-                                                         alt="Profile" class="user-avatar">
+                                                    <img id="profileImage" src="{% if question.author.role == 'admin' %}{{ url_for('static', filename='images/default.png') }}{% else %}{{ url_for('static', filename='images/' + question.author.profile_image) }}{% endif %}" style="width: 40px; height: 40px; margin: 1%; border: rgb(0,0,0) solid 1px;" alt="Profile" class="user-avatar">
                                                     {{ question.author.username }}
                                                 </div>
                                             </td>
