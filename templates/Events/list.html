@@ -137,7 +137,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ url_for('events') }}">
+            <form method="POST" action="{{ url_for('admin_dashboard_action', action='create_event') }}">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="title" class="form-label">Event Title</label>
@@ -162,6 +162,7 @@
         </div>
     </div>
 </div>
+{% endblock content %}
 
 {% block extra_js %}
 <script>
@@ -191,4 +192,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{% endblock %}
+{% endblock extra_js %}

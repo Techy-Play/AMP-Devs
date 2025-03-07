@@ -3,140 +3,185 @@
 {% block title %}Welcome to Campus2Career{% endblock %}
 
 {% block content %}
-<div class="jumbotron text-center">
-    <h1>Welcome to Campus2Career</h1>
-    <p>Connect, Learn, and Grow with your Campus Community</p>
-    {% if not current_user.is_authenticated %}
-        <p>
-            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Login</a>
-            <a href="{{ url_for('signup') }}" class="btn btn-success btn-lg">Sign Up</a>
-        </p>
-    {% endif %}
-</div>
-
-<div class="row">
-    <!-- Recent Questions Section -->
-    <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Recent Questions</h3>
+<!-- Hero Section -->
+<section class="hero-section text-center py-5 mb-5" style="margin-top: 2%;">
+    <div class="container" >
+        <h1 class="display-4 fw-bold mb-4" >Welcome to Campus2Career</h1>
+        <p class="lead text-muted mb-4">Connect, Learn, and Grow with your Campus Community</p>
+        {% if not current_user.is_authenticated %}
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+                <a href="{{ url_for('signup') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Sign Up
+                </a>
             </div>
-            <div class="panel-body">
+        {% endif %}
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="row g-4">
+    <!-- Recent Questions Section -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-question-circle text-primary me-2"></i>Recent Questions
+                    </h3>
+                    <a href="{{ url_for('questions') }}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
                 {% if questions %}
                     {% for question in questions %}
-                        <div class="card question-card">
-                            <h4><a href="{{ url_for('question_detail', id=question.id) }}">{{ question.title }}</a></h4>
-                            <p class="text-muted">
+                        <div class="p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h4 class="h6 mb-0">
+                                    <a href="{{ url_for('question_detail', id=question.id) }}" 
+                                       class="text-decoration-none text-dark">
+                                        {{ question.title }}
+                                    </a>
+                                </h4>
+                                <span class="badge bg-light text-primary">
+                                    {{ question.answers|length }} answers
+                                </span>
+                            </div>
+                            <p class="text-muted small mb-2">
                                 Posted by {{ question.author.username }} on {{ question.created_at.strftime('%B %d, %Y') }}
                             </p>
-                            <p>{{ question.content[:200] }}{% if question.content|length > 200 %}...{% endif %}</p>
-                            <div class="text-muted">
-                                <small>{{ question.answers|length }} answers</small>
-                            </div>
+                            <p class="mb-0 text-muted">
+                                {{ question.content[:200] }}{% if question.content|length > 200 %}...{% endif %}
+                            </p>
                         </div>
                     {% endfor %}
-                    <div class="text-right">
-                        <a href="{{ url_for('questions') }}" class="btn btn-default">View All Questions</a>
-                    </div>
                 {% else %}
-                    <p class="text-center">No questions yet. 
+                    <div class="text-center py-5">
+                        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No questions yet.</p>
                         {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('questions') }}">Be the first to ask!</a>
+                            <a href="{{ url_for('questions') }}" class="btn btn-primary mt-3">
+                                Be the first to ask!
+                            </a>
                         {% else %}
-                            <a href="{{ url_for('login') }}">Login to ask a question!</a>
+                            <a href="{{ url_for('login') }}" class="btn btn-primary mt-3">
+                                Login to ask a question!
+                            </a>
                         {% endif %}
-                    </p>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Upcoming Events Section -->
-    <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Upcoming Events</h3>
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Upcoming Events -->
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-calendar-alt text-primary me-2"></i>Upcoming Events
+                    </h3>
+                    <a href="{{ url_for('events') }}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
             </div>
-            <div class="panel-body">
+            <div class="card-body p-0">
                 {% if events %}
                     {% for event in events %}
-                        <div class="card event-card">
-                            <h4>{{ event.title }}</h4>
-                            <p class="text-muted">
-                                <i class="fas fa-calendar"></i> {{ event.date.strftime('%B %d, %Y') }}
+                        <div class="p-4 border-bottom">
+                            <h4 class="h6 mb-2">{{ event.title }}</h4>
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-calendar me-2"></i>{{ event.date.strftime('%B %d, %Y') }}
                             </p>
-                            <p>{{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}</p>
+                            <p class="mb-0 text-muted small">
+                                {{ event.description[:100] }}{% if event.description|length > 100 %}...{% endif %}
+                            </p>
                         </div>
                     {% endfor %}
-                    <div class="text-right">
-                        <a href="{{ url_for('events') }}" class="btn btn-default">View All Events</a>
-                    </div>
                 {% else %}
-                    <p class="text-center">No upcoming events.</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No upcoming events.</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
 
         <!-- Quick Links -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Quick Links</h3>
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h3 class="h5 mb-0">
+                    <i class="fas fa-link text-primary me-2"></i>Quick Links
+                </h3>
             </div>
-            <div class="panel-body">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <i class="fas fa-question-circle"></i>
-                        <a href="{{ url_for('questions') }}">Discussion Forum</a>
-                    </li>
-                    <li class="list-group-item">
-                        <i class="fas fa-calendar-alt"></i>
-                        <a href="{{ url_for('events') }}">Events Calendar</a>
-                    </li>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('questions') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-question-circle text-primary me-3"></i>
+                        <span>Discussion Forum</span>
+                    </a>
+                    <a href="{{ url_for('events') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-calendar-alt text-primary me-3"></i>
+                        <span>Events Calendar</span>
+                    </a>
                     {% if current_user.is_authenticated %}
-                        <li class="list-group-item">
-                            <i class="fas fa-user"></i>
-                            <a href="{{ url_for('dashboard') }}">My Dashboard</a>
-                        </li>
+                        <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                            <i class="fas fa-tachometer-alt text-primary me-3"></i>
+                            <span>My Dashboard</span>
+                        </a>
                     {% endif %}
-                </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-.jumbotron {
-    background-color: #f8f9fa;
-    padding: 40px;
-    margin-bottom: 30px;
-    border-radius: 8px;
+.hero-section {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(30, 64, 175, 0.1));
+    border-radius: 1rem;
+    margin-top: -2rem;
 }
 
-.question-card {
-    margin-bottom: 20px;
-    padding: 15px;
+.card {
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.event-card {
-    margin-bottom: 15px;
-    padding: 10px;
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.panel {
-    margin-bottom: 30px;
+.list-group-item {
+    border: none;
+    padding: 1rem;
+    transition: all 0.3s ease;
 }
 
-.list-group-item i {
-    margin-right: 10px;
-    color: #666;
+.list-group-item:hover {
+    background-color: rgba(37, 99, 235, 0.05);
+    transform: translateX(5px);
 }
 
-.card h4 {
-    margin-top: 0;
+.badge {
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
 }
 
-.text-muted {
-    font-size: 0.9em;
+.btn-outline-primary {
+    border-width: 2px;
+    font-weight: 500;
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-2px);
 }
 </style>
 {% endblock %}
